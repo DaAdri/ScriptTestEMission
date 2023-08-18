@@ -1,0 +1,1 @@
+Quick & dirty script to test E-Mission server reaction
