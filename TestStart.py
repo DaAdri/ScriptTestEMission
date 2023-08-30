@@ -9,82 +9,41 @@ class Trip:
     currlong = startlong
     startts = 1692085445.01
     currts = startts
+    plateform = "ios"
 
     def dt(self):
         self.currts += 0.01
 
+    def AddTransition(self, state, transition):
+        self.liste.append(
+            {
+                "data": {
+                    "currState": state,
+                    "transition": transition,
+                    "ts": self.currts,
+                },
+                "metadata": {
+                    "platform": self.plateform,
+                    "write_ts": self.currts,
+                    "time_zone": "UTC",
+                    "key": "statemachine/transition",
+                    "read_ts": 0,
+                    "type": "message",
+                },
+            }
+        )
+
     def SoftStart(self):
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_WAITING_FOR_TRIP_START",
-                    "transition": "T_EXITED_GEOFENCE",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+        self.AddTransition("STATE_WAITING_FOR_TRIP_START", "T_EXITED_GEOFENCE")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_WAITING_FOR_TRIP_START",
-                    "transition": "T_TRIP_STARTED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_WAITING_FOR_TRIP_START", "T_TRIP_STARTED")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_TRIP_STARTED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_ONGOING_TRIP", "T_TRIP_STARTED")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_TRIP_RESTARTED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_ONGOING_TRIP", "T_TRIP_RESTARTED")
         self.dt()
 
     def NewPoint(self):
@@ -103,7 +62,7 @@ class Trip:
                     "vaccuracy": 1.3,
                 },
                 "metadata": {
-                    "platform": "ios",
+                    "platform": self.plateform,
                     "write_ts": self.currts,
                     "time_zone": "UTC",
                     "key": "background/location",
@@ -127,7 +86,7 @@ class Trip:
                     "vaccuracy": 1.3,
                 },
                 "metadata": {
-                    "platform": "ios",
+                    "platform": self.plateform,
                     "write_ts": self.currts,
                     "time_zone": "UTC",
                     "key": "background/filtered_location",
@@ -138,117 +97,22 @@ class Trip:
         )
 
     def SoftEnd(self):
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_VISIT_STARTED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
-        self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_TRIP_END_DETECTED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+        self.AddTransition("STATE_ONGOING_TRIP", "T_VISIT_STARTED")
         self.dt()
 
-        self.NewPoint()
+        self.AddTransition("STATE_ONGOING_TRIP", "T_TRIP_END_DETECTED")
         self.dt()
 
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_END_TRIP_TRACKING",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+        self.AddTransition("STATE_ONGOING_TRIP", "T_END_TRIP_TRACKING")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_ONGOING_TRIP",
-                    "transition": "T_TRIP_ENDED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_ONGOING_TRIP", "T_TRIP_ENDED")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_WAITING_FOR_TRIP_START",
-                    "transition": "T_NOP",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_WAITING_FOR_TRIP_START", "T_NOP")
         self.dt()
-        self.liste.append(
-            {
-                "data": {
-                    "currState": "STATE_WAITING_FOR_TRIP_START",
-                    "transition": "T_DATA_PUSHED",
-                    "ts": self.currts,
-                },
-                "metadata": {
-                    "platform": "ios",
-                    "write_ts": self.currts,
-                    "time_zone": "UTC",
-                    "key": "statemachine/transition",
-                    "read_ts": 0,
-                    "type": "message",
-                },
-            }
-        )
+
+        self.AddTransition("STATE_WAITING_FOR_TRIP_START", "T_DATA_PUSHED")
         self.dt()
 
     def MotionPoint(
@@ -257,9 +121,9 @@ class Trip:
         self.liste.append(
             {
                 "data": {
-                    "cycling": True,
+                    "cycling": bike,
                     "walking": False,
-                    "running": False,
+                    "running": not bike,
                     "automotive": False,
                     "stationary": False,
                     "confidence": 100,
@@ -270,7 +134,7 @@ class Trip:
                 "metadata": {
                     "write_ts": self.currts,
                     "time_zone": "UTC",
-                    "platform": "ios",
+                    "platform": self.plateform,
                     "key": "background/motion_activity",
                     "read_ts": 0,
                     "type": "sensor-data",
@@ -302,21 +166,10 @@ trip.currlat += 0.003
 
 trip.SoftStart()
 
-for i in range(50):
+for i in range(500):
     trip.NewPoint()
     trip.dt()
-    trip.MotionPoint(False)
-    trip.currlat += 0.001
-    trip.currlong -= 0.001
-    trip.currts += 25
-
-trip.currts += 1000
-trip.currlat += 0.1
-
-for i in range(50):
-    trip.NewPoint()
-    trip.dt()
-    trip.MotionPoint(False)
+    trip.MotionPoint(i > 50)
     trip.currlat += 0.001
     trip.currlong -= 0.001
     trip.currts += 25
@@ -324,6 +177,6 @@ for i in range(50):
 trip.SoftEnd()
 
 
-body = {"user": "NewVerifPythonGenerated6", "phone_to_server": trip.liste}
+body = {"user": "605jpqg0zj7", "phone_to_server": trip.liste}
 
 print(json.dumps(body))
