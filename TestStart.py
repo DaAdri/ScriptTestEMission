@@ -3,11 +3,11 @@ import json
 
 class Trip:
     liste = []
-    startlat = -33.89024429693447
+    startlat = 45.765190
     currlat = startlat
-    startlong = 151.19991587790943
+    startlong = 4.831744
     currlong = startlong
-    startts = 1692085445.01
+    startts = 1693550764
     currts = startts
     plateform = "ios"
 
@@ -45,6 +45,27 @@ class Trip:
 
         self.AddTransition("STATE_ONGOING_TRIP", "T_TRIP_RESTARTED")
         self.dt()
+
+    def HardStart(self):
+
+        self.AddTransition('STATE_WAITING_FOR_TRIP_START', 'T_EXITED_GEOFENCE')
+        self.dt()
+        self.AddTransition('STATE_WAITING_FOR_TRIP_START', 'T_TRIP_STARTED')
+        self.dt()
+        self.AddTransition('STATE_WAITING_FOR_TRIP_START', 'T_VISIT_ENDED')
+        self.dt()
+        self.AddTransition('STATE_ONGOING_TRIP', 'T_TRIP_STARTED')
+        self.dt()
+
+    def HardEnd(self):
+
+        self.AddTransition('STATE_ONGOING_TRIP', 'T_TRIP_END_DETECTED')
+        self.AddTransition('STATE_ONGOING_TRIP', 'T_END_TRIP_TRACKING')
+        self.AddTransition('STATE_ONGOING_TRIP', 'T_TRIP_ENDED')
+        self.AddTransition('STATE_ONGOING_TRIP', 'T_FORCE_STOP_TRACKING')
+        self.AddTransition('STATE_WAITING_FOR_TRIP_START', 'T_FORCE_STOP_TRACKING')
+        self.AddTransition('STATE_WAITING_FOR_TRIP_START', 'T_NOP')
+
 
     def NewPoint(self):
         self.liste.append(
@@ -153,20 +174,20 @@ for i in range(100):
     trip.MotionPoint(True)
     trip.dt()
 
-    trip.currlat += 0.001
-    trip.currlong += 0.001
+    trip.currlat += 0.01
+    trip.currlong += 0.01
     trip.currts += 25
 
 
-trip.currts += 305  # 630 ne donne pas de trajet, pause trop longue. 60 marche. Interprétation du code du serveur : 5 min si on est en "time", 10 en "distance". Cependant les deux donnent un trajet avec un "trou" entre le point de départ du premier segment et le trajet du deuxième. 5 min n'est pas la limite exacte non plus (305s de pause marche).
+trip.currts += 30  # 630 ne donne pas de trajet, pause trop longue. 60 marche. Interprétation du code du serveur : 5 min si on est en "time", 10 en "distance". Cependant les deux donnent un trajet avec un "trou" entre le point de départ du premier segment et le trajet du deuxième. 5 min n'est pas la limite exacte non plus (305s de pause marche).
 trip.SoftEnd()
-trip.currts += 7000
+trip.currts += 36000
 
-trip.currlat += 0.003
+trip.currlong += 0.001
 
 trip.SoftStart()
 
-for i in range(500):
+for i in range(50):
     trip.NewPoint()
     trip.dt()
     trip.MotionPoint(i > 50)
@@ -177,6 +198,6 @@ for i in range(500):
 trip.SoftEnd()
 
 
-body = {"user": "605jpqg0zj7", "phone_to_server": trip.liste}
+body = {"user": "VerifAvionIgnore2", "phone_to_server": trip.liste}
 
 print(json.dumps(body))
